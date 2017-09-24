@@ -108,8 +108,6 @@ public class LoadMoreLayout extends FrameLayout {
                     intercept = true;
                 }
                 break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
         }
 
         return intercept || super.onInterceptTouchEvent(ev);
@@ -226,12 +224,8 @@ public class LoadMoreLayout extends FrameLayout {
                 movePos(curY + mStart);
                 postDelayed(this, MOVE_DELAY);
             } else {
-                finish();
+                reset();
             }
-        }
-
-        private void finish() {
-            reset();
         }
 
         private void reset() {
