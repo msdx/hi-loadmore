@@ -101,13 +101,15 @@ public class LoadMoreLayout extends FrameLayout {
                 }
                 boolean moveUp = offsetY < 0;
                 boolean canMoveDown = mCurrentOffsetY < 0;
-                if (moveUp && mContent.canScrollVertically(1)) {//如果可以继续往下滑动，则不处理
+                if (moveUp && mContent.canScrollVertically(1)) {
+                    //如果可以继续往下滑动，则不处理
                     break;
                 }
                 if (moveUp || canMoveDown) {
                     intercept = true;
                 }
                 break;
+            default:
         }
 
         return intercept || super.onInterceptTouchEvent(ev);
@@ -131,6 +133,7 @@ public class LoadMoreLayout extends FrameLayout {
             case MotionEvent.ACTION_CANCEL:
                 onRelease();
                 return true;
+            default:
         }
         return super.onTouchEvent(event);
     }

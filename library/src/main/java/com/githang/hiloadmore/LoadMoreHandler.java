@@ -9,5 +9,8 @@ package com.githang.hiloadmore;
  */
 public interface LoadMoreHandler {
 
+    /**
+     * 触发加载更多后的回调。
+     */
     void onLoadMore();
 }
