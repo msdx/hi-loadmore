@@ -27,7 +27,7 @@ public class LoadMoreLayout extends FrameLayout {
     private byte mStatus = STATUS_INIT;
     private int mDuration = 1000;
 
-    View mContent;
+    private View mContent;
     private int mCurrentOffsetY;
     private int mOffsetYToLoadMore = 200;
     private float mResistance = (float) Math.PI;
@@ -167,6 +167,15 @@ public class LoadMoreLayout extends FrameLayout {
         }
     }
 
+    protected void onReachBottom() {
+        if (!mHasMore || mStatus == STATUS_LOADING) {
+            return;
+        }
+        mStatus = STATUS_LOADING;
+        mLoadMoreHandler.onLoadMore();
+        mLoadMoreUIHandler.onBegin();
+    }
+
     public void triggerToLoadMore() {
         if (!mHasMore || mStatus == STATUS_LOADING) {
             return;
@@ -180,6 +189,10 @@ public class LoadMoreLayout extends FrameLayout {
         mHasMore = hasMore;
         mLoadMoreUIHandler.onComplete(hasMore);
         mStatus = STATUS_COMPLETE;
+    }
+
+    public View getContentView() {
+        return mContent;
     }
 
     public void setHasMore(boolean hasMore) {
