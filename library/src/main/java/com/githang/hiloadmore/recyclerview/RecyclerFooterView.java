@@ -21,32 +21,32 @@ public class RecyclerFooterView extends FrameLayout implements LoadMoreUIHandler
 
     public RecyclerFooterView(@NonNull Context context) {
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.footer_load_more, this, true);
+        LayoutInflater.from(context).inflate(R.layout.hlm_footer_load_more, this, true);
         mText = findViewById(R.id.footer_text);
     }
 
     @Override
     public void onPrepare() {
         mText.setVisibility(VISIBLE);
-        mText.setText(R.string.pull_to_load_more);
+        mText.setText(R.string.hlm_pull_to_load_more);
     }
 
     @Override
     public void onBegin() {
-        mText.setText(R.string.tip_loading_more);
+        mText.setText(R.string.hlm_tip_loading_more);
     }
 
     @Override
     public void onComplete(boolean hasMore) {
-        mText.setText(hasMore ? R.string.pull_to_load_more : R.string.tip_load_finish);
+        mText.setText(hasMore ? R.string.hlm_pull_to_load_more : R.string.hlm_tip_load_finish);
     }
 
     @Override
     public void onPositionChange(int offsetY, int offsetToLoadMore) {
         if (Math.abs(offsetY) > offsetToLoadMore) {
-            mText.setText(R.string.release_to_load_more);
+            mText.setText(R.string.hlm_release_to_load_more);
         } else {
-            mText.setText(R.string.pull_to_load_more);
+            mText.setText(R.string.hlm_pull_to_load_more);
         }
     }
 }

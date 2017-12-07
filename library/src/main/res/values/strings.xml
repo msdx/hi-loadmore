@@ -1,6 +1,6 @@
 <resources>
-    <string name="pull_to_load_more">上拉加载更多</string>
-    <string name="tip_loading_more">正在加载更多</string>
-    <string name="tip_load_finish">已经全部加载完毕</string>
-    <string name="release_to_load_more">松手开始加载</string>
+    <string name="hlm_pull_to_load_more">上拉加载更多</string>
+    <string name="hlm_tip_loading_more">正在加载更多</string>
+    <string name="hlm_tip_load_finish">已经全部加载完毕</string>
+    <string name="hlm_release_to_load_more">松手开始加载</string>
 </resources>
