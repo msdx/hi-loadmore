@@ -21,7 +21,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-task syncJavadoc(type: Sync) {
+task syncJavadoc(type: Sync, dependsOn: javadoc) {
     from javadoc.destinationDir
     into rootProject.file('docs')
 }
