@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Hi LoadMoreLayout</string>
+    <string name="ultra_load_more">通用上拉加载</string>
+    <string name="recycler_view_load_more">RecyclerView 上拉加载</string>
 </resources>
