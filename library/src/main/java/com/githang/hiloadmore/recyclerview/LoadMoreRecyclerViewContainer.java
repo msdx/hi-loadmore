@@ -52,7 +52,7 @@ public class LoadMoreRecyclerViewContainer extends LoadMoreLayout {
 
                     if ((mLinearLayoutManager.getItemCount() - recyclerView.getChildCount())
                             <= mLinearLayoutManager.findFirstVisibleItemPosition()) {
-                        onReachBottom();
+                        triggerToLoadMore();
                     }
                 }
             });

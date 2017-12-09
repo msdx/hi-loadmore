@@ -167,15 +167,6 @@ public class LoadMoreLayout extends FrameLayout {
         }
     }
 
-    protected void onReachBottom() {
-        if (!mHasMore || mStatus == STATUS_LOADING) {
-            return;
-        }
-        mStatus = STATUS_LOADING;
-        mLoadMoreHandler.onLoadMore();
-        mLoadMoreUIHandler.onBegin();
-    }
-
     public void triggerToLoadMore() {
         if (!mHasMore || mStatus == STATUS_LOADING) {
             return;
@@ -186,8 +177,7 @@ public class LoadMoreLayout extends FrameLayout {
     }
 
     public void loadMoreComplete(boolean hasMore) {
-        mHasMore = hasMore;
-        mLoadMoreUIHandler.onComplete(hasMore);
+        setHasMore(hasMore);
         mStatus = STATUS_COMPLETE;
     }
 
@@ -197,6 +187,7 @@ public class LoadMoreLayout extends FrameLayout {
 
     public void setHasMore(boolean hasMore) {
         mHasMore = hasMore;
+        mLoadMoreUIHandler.onComplete(hasMore);
     }
 
     protected boolean hasMore() {

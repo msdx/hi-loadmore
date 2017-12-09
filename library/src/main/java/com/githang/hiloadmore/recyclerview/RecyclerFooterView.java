@@ -27,7 +27,6 @@ public class RecyclerFooterView extends FrameLayout implements LoadMoreUIHandler
 
     @Override
     public void onPrepare() {
-        mText.setVisibility(VISIBLE);
         mText.setText(R.string.hlm_pull_to_load_more);
     }
 
