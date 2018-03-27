@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. Xi'an iRain IOT Technology service CO., Ltd (ShenZhen). All Rights Reserved.
+ * Copyright (c) 2017-2018. Xi'an iRain IOT Technology service CO., Ltd (ShenZhen). All Rights Reserved.
  */
 package com.githang.hiloadmore;
 
@@ -15,6 +15,7 @@ import android.widget.Scroller;
  * 上拉加载更多
  *
  * @author Geek_Soledad (msdx.android@qq.com)
+ * @version 0.2
  * @since 2017-06-09 0.1
  */
 public class LoadMoreLayout extends FrameLayout {
@@ -56,10 +57,6 @@ public class LoadMoreLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        final int childCount = getChildCount();
-        if (childCount < 1) {
-            throw new IllegalStateException("LoadMoreLayout needs at least one child");
-        }
         if (mContent == null) {
             mContent = getChildAt(0);
             mContent.bringToFront();
@@ -68,11 +65,11 @@ public class LoadMoreLayout extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int offsetY = mCurrentOffsetY;
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-
+        super.onLayout(changed, l, t, r, b);
         if (mContent != null) {
+            int offsetY = mCurrentOffsetY;
+            int paddingLeft = getPaddingLeft();
+            int paddingTop = getPaddingTop();
             MarginLayoutParams lp = (MarginLayoutParams) mContent.getLayoutParams();
             final int left = paddingLeft + lp.leftMargin;
             final int top = paddingTop + lp.topMargin + offsetY;
