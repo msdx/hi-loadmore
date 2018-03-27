@@ -10,9 +10,9 @@ HiLoadMore是一个通用可扩展的上拉加载控件，实现对任何子View
 # Gradle 依赖
 
 ```groovy
-    compile 'com.githang:hi-loadmore:0.1.1'
+    compile 'com.githang:hi-loadmore:0.2'
     // OR
-    implementation 'com.githang:hi-loadmore:0.1.1'
+    implementation 'com.githang:hi-loadmore:0.2'
 ```
 
 # Javadoc
