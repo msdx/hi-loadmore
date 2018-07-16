@@ -29,11 +29,12 @@ public class LoadMoreLayout extends FrameLayout {
     private int mDuration = 1000;
 
     private View mContent;
-    private int mCurrentOffsetY;
+    private int mCurrentPosition;
     private int mOffsetYToLoadMore = 200;
     private float mResistance = (float) Math.PI;
 
     private float mDownY;
+    private float mLastY;
 
     private int mDragSlop;
 
@@ -67,15 +68,15 @@ public class LoadMoreLayout extends FrameLayout {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         if (mContent != null) {
-            int offsetY = mCurrentOffsetY;
             int paddingLeft = getPaddingLeft();
             int paddingTop = getPaddingTop();
             MarginLayoutParams lp = (MarginLayoutParams) mContent.getLayoutParams();
             final int left = paddingLeft + lp.leftMargin;
-            final int top = paddingTop + lp.topMargin + offsetY;
+            final int top = paddingTop + lp.topMargin;
             final int right = left + mContent.getMeasuredWidth();
             final int bottom = top + mContent.getMeasuredHeight();
             mContent.layout(left, top, right, bottom);
+            mContent.setTranslationY(mCurrentPosition);
         }
     }
 
@@ -89,7 +90,7 @@ public class LoadMoreLayout extends FrameLayout {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mDownY = ev.getY();
-                mScrollChecker.abortIfRunning();
+                mLastY = ev.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
                 int offsetY = (int) (ev.getY() - mDownY);
@@ -97,13 +98,14 @@ public class LoadMoreLayout extends FrameLayout {
                     break;
                 }
                 boolean moveUp = offsetY < 0;
-                boolean canMoveDown = mCurrentOffsetY < 0;
+                boolean canMoveDown = mCurrentPosition < 0;
                 if (moveUp && mContent.canScrollVertically(1)) {
-                    //如果可以继续往下滑动，则不处理
+                    //如果子View可以继续往上滑动，则不处理
                     break;
                 }
                 if (moveUp || canMoveDown) {
                     intercept = true;
+                    mScrollChecker.abortIfRunning();
                 }
                 break;
             default:
@@ -116,15 +118,16 @@ public class LoadMoreLayout extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                float offsetY = event.getY() - mDownY;
+                float offsetY = event.getY() - mLastY;
                 if (mStatus != STATUS_LOADING && mStatus != STATUS_PREPARE) {
                     mStatus = STATUS_PREPARE;
                     mLoadMoreUIHandler.onPrepare();
                 }
-                movePos((int) (offsetY / mResistance));
+                movePos((int) (offsetY / mResistance) + mCurrentPosition);
                 if (mStatus == STATUS_PREPARE) {
-                    mLoadMoreUIHandler.onPositionChange(mCurrentOffsetY, mOffsetYToLoadMore);
+                    mLoadMoreUIHandler.onPositionChange(mCurrentPosition, mOffsetYToLoadMore);
                 }
+                mLastY = event.getY();
                 return true;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
@@ -135,19 +138,20 @@ public class LoadMoreLayout extends FrameLayout {
         return super.onTouchEvent(event);
     }
 
-    private void movePos(int offsetY) {
-        if (offsetY > 0 && mCurrentOffsetY == 0) {
+    private void movePos(int position) {
+        if (position > 0 && mCurrentPosition == 0) {
             return;
         }
-        if (offsetY > 0) {
-            offsetY = 0;
+        if (position > 0) {
+            position = 0;
         }
-        mContent.setTranslationY(offsetY);
-        mCurrentOffsetY = offsetY;
+        mContent.setTranslationY(position);
+        mCurrentPosition = position;
     }
 
     private void onRelease() {
         performLoadMore();
+        mCurrentPosition = (int) mContent.getTranslationY();
         mScrollChecker.tryToScrollTo(0, mDuration);
     }
 
@@ -155,7 +159,7 @@ public class LoadMoreLayout extends FrameLayout {
         if (mStatus != STATUS_PREPARE) {
             return;
         }
-        if (Math.abs(mCurrentOffsetY) >= mOffsetYToLoadMore) {
+        if (Math.abs(mCurrentPosition) >= mOffsetYToLoadMore) {
             mStatus = STATUS_LOADING;
             mLoadMoreHandler.onLoadMore();
             mLoadMoreUIHandler.onBegin();
@@ -213,7 +217,6 @@ public class LoadMoreLayout extends FrameLayout {
 
         private final Scroller mScroller;
 
-        private int mStart;
         private boolean mIsRunning;
 
         ScrollChecker() {
@@ -222,10 +225,9 @@ public class LoadMoreLayout extends FrameLayout {
 
         @Override
         public void run() {
-            boolean isFinish = !mScroller.computeScrollOffset() || mScroller.isFinished();
-            int curY = mScroller.getCurrY();
+            boolean isFinish = !mScroller.computeScrollOffset();
             if (!isFinish) {
-                movePos(curY + mStart);
+                movePos(mScroller.getCurrY());
                 postDelayed(this, MOVE_DELAY);
             } else {
                 reset();
@@ -234,19 +236,18 @@ public class LoadMoreLayout extends FrameLayout {
 
         private void reset() {
             mIsRunning = false;
-            mStart = 0;
+            removeCallbacks(this);
         }
 
         void tryToScrollTo(int to, int duration) {
-            if (mCurrentOffsetY == to) {
+            if (mCurrentPosition == to) {
                 return;
             }
             removeCallbacks(this);
             if (!mScroller.isFinished()) {
-                mScroller.forceFinished(true);
+                mScroller.abortAnimation();
             }
-            mStart = mCurrentOffsetY;
-            mScroller.startScroll(0, 0, 0, to - mStart, duration);
+            mScroller.startScroll(0, mCurrentPosition, 0, -mCurrentPosition - to, duration);
             post(this);
             mIsRunning = true;
         }
@@ -254,7 +255,7 @@ public class LoadMoreLayout extends FrameLayout {
         void abortIfRunning() {
             if (mIsRunning) {
                 if (!mScroller.isFinished()) {
-                    mScroller.forceFinished(true);
+                    mScroller.abortAnimation();
                 }
                 reset();
             }
